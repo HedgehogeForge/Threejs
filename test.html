@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interactive Cylinder with WebGL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <style>
+      body { margin: 0; }
+      canvas { display: block; }
+      #controls { position: absolute; top: 10px; left: 10px; background: rgba(255, 255, 255, 0.8); padding: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <label for="radius">Radius:</label>
+      <input type="number" id="radius" value="1" step="0.1"><br>
+      <label for="height">Height:</label>
+      <input type="number" id="height" value="2" step="0.1"><br>
+      <label for="color">Color:</label>
+      <input type="color" id="color" value="#0077ff"><br>
+    </div>
+    <script>
+      // Configuración básica de la escena
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Luces
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(5, 5, 5).normalize();
+      scene.add(light);
+
+      // Material estándar
+      let material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
+
+      // Cilindro
+      let cylinderGeometry = new THREE.CylinderGeometry(1, 1, 2, 32);
+      let cylinder = new THREE.Mesh(cylinderGeometry, material);
+      scene.add(cylinder);
+
+      // Configuración inicial de la cámara
+      camera.position.z = 5;
+
+      // Función para actualizar el cilindro
+      function updateCylinder() {
+        const radius = parseFloat(document.getElementById('radius').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const color = document.getElementById('color').value;
+
+        // Eliminar el cilindro anterior
+        scene.remove(cylinder);
+
+        // Crear un nuevo cilindro con los parámetros actualizados
+        cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, 32);
+        material = new THREE.MeshStandardMaterial({ color: color });
+        cylinder = new THREE.Mesh(cylinderGeometry, material);
+        scene.add(cylinder);
+      }
+
+      // Añadir event listeners a los inputs
+      document.getElementById('radius').addEventListener('input', updateCylinder);
+      document.getElementById('height').addEventListener('input', updateCylinder);
+      document.getElementById('color').addEventListener('input', updateCylinder);
+
+      // Función para actualizar la posición del cilindro según el mouse
+      function onMouseMove(event) {
+        const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        cylinder.position.x = mouseX * 5;
+        cylinder.position.y = mouseY * 5;
+      }
+
+      // Añadir event listener para el movimiento del mouse
+      window.addEventListener('mousemove', onMouseMove);
+
+      // Array para almacenar las posiciones
+      const positions = [];
+
+      // Función para guardar la posición del cilindro al hacer clic
+      function onMouseClick() {
+        if (positions.length < 3) {
+          const clone = cylinder.clone();
+          clone.position.copy(cylinder.position);
+          scene.add(clone);
+          positions.push({ x: clone.position.x, y: clone.position.y, z: clone.position.z });
+          console.log('Position saved:', positions[positions.length - 1]);
+        } else {
+          console.log('Three positions already saved:', positions);
+        }
+      }
+
+      // Añadir event listener para el clic del mouse
+      window.addEventListener('click', onMouseClick);
+
+      // Animación
+      const animate = function () {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      };
+
+      // Iniciar animación
+      animate();
+    </script>
+  </body>
+</html>
