@@ -26,6 +26,8 @@ An event listener is added to track mouse clicks and save the positions.
 
 The animate function continuously renders the scene, ensuring smooth updates and interactions.
 The script allows users to interactively modify the cylinder's properties and move it around the canvas, while also saving up to three static copies of the cylinder at different positions when the mouse is clicked.
+
+A picture of the result. Simple but useful for learning.
 ![image](https://github.com/user-attachments/assets/1400ce62-0e51-4855-b1ad-8a78548a0102)
 
 
